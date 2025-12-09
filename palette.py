@@ -1,8 +1,5 @@
-
-import numpy as np
 from colours import *
 from ansi import *
-
 
 class Palette():
     def __init__(self):
@@ -13,7 +10,7 @@ class Palette():
         }
         self.maxNameLen = 5
         self.maxAmount = 0
-        self.result = []
+        self.result = (0,0,0)
         self.mix()
 
     def mix(self) -> tuple:
@@ -27,7 +24,7 @@ class Palette():
             nTotal += n
         # normalise the totals
         if nTotal == 0:
-            return [0, 0, 0]
+            return (0, 0, 0)
         rFinal = rTotal / nTotal
         gFinal = gTotal / nTotal
         bFinal = bTotal / nTotal
@@ -35,19 +32,56 @@ class Palette():
         rgbFinal = (rFinal, gFinal, bFinal)
         self.result = rgbFinal
     
-    def show(self):
-        # calculate widths
-        for 
+    def show(self, header = "=", footer = "=", seperator = "-"):
+        # calc
+        numWidth = len(str(self.maxAmount))
+        width = self.maxNameLen + 15 + numWidth
+        
+        if len(header) > 0:
+            print(header[0]*width)
+        
+        # result
+        rgb_print(
+            " "*width, 
+            background=self.result, 
+            foreground=auto_compliment(self.result)
+        )
+        rgb_print(
+            hexify(self.result).center(width), 
+            background=self.result, 
+            foreground=auto_compliment(self.result)
+        )
+        rgb_print(
+            " "*width, 
+            background=self.result, 
+            foreground=auto_compliment(self.result)
+        )
+        
+        if len(seperator) > 0:
+            print(seperator[0]*width)
         
         # print each colour
         for name, (colour, amount) in self.palette.items():
-            colour, amount = data
-            rgb_print(f"{format(name, )} | {hexify(colour)} | {format(amount, "4")}", background=colour, foreground = auto_compliment(colour))
+            rgb_print(
+                " " +
+                format(name, f"{self.maxNameLen}")
+                + " | " +
+                hexify(colour) 
+                + " | " +
+                format(amount, f"{numWidth}")
+                + " ", 
+                background = colour,
+                foreground = auto_compliment(colour)
+            )
+        if len(footer) > 0:
+            print(footer[0]*width)
 
 
     def add_colour(self, name: str, value: tuple[int]):
         name = name.lower()
         rgb_validate(value)
+        if len(name) > self.maxNameLen:
+            self.maxNameLen = len(name)
         self.palette[name] = [value, 0]
 
     def add_hex(self, name: str, hexcode: str):
