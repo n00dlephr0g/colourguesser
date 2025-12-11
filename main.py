@@ -1,2 +1,2 @@
-from palette import Palette
+from palette import *
 
